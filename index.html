@@ -45,12 +45,6 @@
 
             game.disableAllButtons();
 
-            function updateStatus() {
-                const status = game.getStatus();
-                $('#age').text(status.currentAge);
-                $('#years-left').text(status.yearsLeft);
-                $('#total-points').text(status.totalPoints);
-            }
 
             $('#start-new-game').click(function() {
                 if (game.isGameInProgress()) {
@@ -61,30 +55,26 @@
                 } else {
                     game.startNewGame();
                 }
-                updateStatus();
+                game.updateStatus();
             });
 
             $('#draw-choice').click(async function() {
                 $(this).prop('disabled', true);
-                choiceCard = game.drawChoice();
-                await choiceCard.flip();
-                game.applyPointsForCard(choiceCard);
-                updateStatus();
-                $('#draw-luck').prop('disabled', false);
+                game.drawChoice().then(() => {
+                    $('#draw-luck').prop('disabled', false);
+                });
             });
 
             $('#draw-luck').click(async function() {
                 $(this).prop('disabled', true);
-                luckCard = game.drawLuck();
-                await luckCard.flip();
-                game.applyPointsForCard(luckCard);
-                updateStatus();
-                $('#next-year').prop('disabled', false);
+                game.drawLuck().then(() => {
+                    $('#next-year').prop('disabled', false);
+                });
             });
 
             $('#next-year').click(function() {
                 if (game.nextYear()) {
-                    updateStatus();
+                    game.updateStatus();
                     $('#draw-choice').prop('disabled', false);
                     $('#draw-luck').prop('disabled', true);
                     $('#next-year').prop('disabled', true);
@@ -93,7 +83,7 @@
                 }
             });
 
-            updateStatus();
+            game.updateStatus();
         });
     </script>
 </body>

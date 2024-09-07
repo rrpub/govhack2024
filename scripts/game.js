@@ -1,27 +1,27 @@
 class Game {
     constructor() {
         this.gameInProgress = false;
-        this.currentAge = 16;
+        this.currentAge = 15;
         this.maxAge = 25;
         this.yearsLeft = this.maxAge - this.currentAge;
         this.totalPoints = 0;
         this.character = {};
         this.characterPool = {
             'Family Income': {
-              'Low Income': 10,
-              'Medium Income': 20,
-              'High Income': 30
+              'Wealthy Family': 5,
+              'Middle Income Family': 4,
+              'Low Income Family': 3
             },
             'Location': {
-              'Rural': 10,
-              'Suburban': 20,
-              'Urban': 30
+              'Wealthy Suburb': 5,
+              'Middle Suburb': 4,
+              'Rural': 3, 
+              'Low S-E Suburb': 2 
             },
             'Parents Education Level': {
-              'High School': 10,
-              'Bachelor\'s Degree': 20,
-              'Master\'s Degree': 30,
-              'PhD': 40
+              'Tertiary': 5, 
+              'Yr 12': 4,
+              'Pre-yr 10': 3
             }
         };
         this.choices = [
@@ -62,12 +62,26 @@ class Game {
         };
     }
 
+    updateStatus() {
+        $('#age').text(this.currentAge);
+        $('#years-left').text(this.yearsLeft);
+        $('#total-points').text(this.totalPoints);
+    }
+
     drawChoice() {
-        return this.choices[Math.floor(Math.random() * this.choices.length)];
+        const card = this.choices[Math.floor(Math.random() * this.choices.length)];
+        return card.flip().then(() => {
+            this.applyPointsForCard(card);
+            this.updateStatus();
+        });
     }
 
     drawLuck() {
-        return this.lucks[Math.floor(Math.random() * this.lucks.length)];
+        const card = this.lucks[Math.floor(Math.random() * this.lucks.length)];
+        return card.flip().then(() => {
+            this.applyPointsForCard(card);
+            this.updateStatus();
+        });
     }
 
     applyPointsForCard(card) {
