@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employment Pathway Game</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./scripts/card.js" defer></script>
+    <script src="./scripts/game.js" defer></script>
+</head>
+<body>
+    <div id="game">
+        <header>
+            <h1>Welcome to the Employment Pathway Game!</h1>
+        </header>
+        <section id="introduction">
+            <h2>Game Introduction</h2>
+            <p>Navigate through choices to simulate your pathway to employment.</p>
+        </section>
+        <section id="game-progression" style="display: none;">
+            <h2>Game Progression</h2>
+            <div id="current-situation"></div>
+            <div id="choices"></div>
+        </section>
+        <section id="status-display">
+            <h2>Status</h2>
+            <p>Age: <span id="age"></span></p>
+            <p>Years Left: <span id="years-left"></span></p>
+            <p>Points: <span id="total-points"></span></p>
+        </section>
+        <section id="game-controls">
+            <button id="start-new-game">New Game</button>
+            <div id="character-attributes"></div>
+            <button id="draw-choice">Draw Choice</button>
+            <button id="draw-luck" disabled>Draw Luck</button>
+            <button id="next-year" disabled>Next Year</button>
+        </section>
+    </div>
+    <script>
+        // Game flow
+        $(document).ready(function() {
+            let game = new Game();
+            let choiceCard, luckCard;
+
+            game.disableAllButtons();
+
+            function updateStatus() {
+                const status = game.getStatus();
+                $('#age').text(status.currentAge);
+                $('#years-left').text(status.yearsLeft);
+                $('#total-points').text(status.totalPoints);
+            }
+
+            $('#start-new-game').click(function() {
+                if (game.isGameInProgress()) {
+                    if (confirm("Are you sure you want to end the current game and start a new one?")) {
+                        game.endGame();
+                        game.startNewGame();
+                    }
+                } else {
+                    game.startNewGame();
+                }
+                updateStatus();
+            });
+
+            $('#draw-choice').click(async function() {
+                $(this).prop('disabled', true);
+                choiceCard = game.drawChoice();
+                await choiceCard.flip();
+                game.applyPointsForCard(choiceCard);
+                updateStatus();
+                $('#draw-luck').prop('disabled', false);
+            });
+
+            $('#draw-luck').click(async function() {
+                $(this).prop('disabled', true);
+                luckCard = game.drawLuck();
+                await luckCard.flip();
+                game.applyPointsForCard(luckCard);
+                updateStatus();
+                $('#next-year').prop('disabled', false);
+            });
+
+            $('#next-year').click(function() {
+                if (game.nextYear()) {
+                    updateStatus();
+                    $('#draw-choice').prop('disabled', false);
+                    $('#draw-luck').prop('disabled', true);
+                    $('#next-year').prop('disabled', true);
+                } else {
+                    alert("Game Over! You've reached 25 years old.");
+                }
+            });
+
+            updateStatus();
+        });
+    </script>
+</body>
+</html>

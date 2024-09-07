@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #0078D4;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+section {
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+}
+
+input[type='number'], input[type='text'], select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #0078D4;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px 0px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005a9e;
+}
+
+button.blurred {
+    opacity: 0.5;  /* Reduces opacity to signify that the button is disabled */
+    pointer-events: none;  /* Prevents mouse events on the button */
+    filter: blur(2px);  /* Applies a blur effect to make the button look inactive */
+    cursor: not-allowed;  /* Changes the cursor to indicate the button cannot be clicked */
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #ccc;
+    color: #666;
+  }
+
+a { 
+    text-decoration: none; 
+    color: #0078D4;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    section {
+        margin: 10px;
+        padding: 15px;
+    }
+    button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    header {
+        font-size: 20px;
+    }
+    h2 {
+        font-size: 18px;
+    }
+}
