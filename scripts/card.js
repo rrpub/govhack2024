@@ -34,3 +34,14 @@ class Card {
         return card;
     }
 }
+
+class Choice {
+    constructor(description, points, minAge, maxAge, prerequisite = null) {
+        this.description = description;
+        this.points = points;
+        this.minAge = minAge;
+        this.maxAge = maxAge;
+        this.prerequisite = prerequisite;
+        this.chosen = false;
+    }
+}

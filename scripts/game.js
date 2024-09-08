@@ -1,7 +1,8 @@
 class Game {
     constructor() {
+        this.INIT_AGE = 15;
         this.gameInProgress = false;
-        this.currentAge = 15;
+        this.currentAge = this.INIT_AGE;
         this.maxAge = 25;
         this.yearsLeft = this.maxAge - this.currentAge;
         this.totalPoints = 0;
@@ -24,10 +25,23 @@ class Game {
               'Pre-yr 10': 3
             }
         };
+        this.choiceMadeThisTurn = false;
         this.choices = [
-            new Card('Choose a part-time job', 10),
-            new Card('Volunteer for a community project', 5),
-            new Card('Take a summer internship', 15),
+            new Choice('Complete Yr 10 work experience', 1, this.INIT_AGE, this.INIT_AGE),
+            new Choice('Part time job during school years', 3, this.INIT_AGE, this.INIT_AGE+2),
+            new Choice('Leave education after yr 12', -1, this.INIT_AGE+2, this.INIT_AGE+2),
+            new Choice('Start on apprenticeship', 4, this.INIT_AGE+1, this.INIT_AGE+2),
+            new Choice('TAFE after yr 12', 3, this.INIT_AGE+3, this.INIT_AGE+3), 
+            new Choice('University after yr 12', 5, this.INIT_AGE+3, this.INIT_AGE+3), 
+            new Choice('Start a job after yr 12', 1, this.INIT_AGE+3, this.INIT_AGE+3),  
+            new Choice('Leave study before completion', -3, this.INIT_AGE+3, this.INIT_AGE+10),
+            new Choice('Transition from TAFE to university', 2, this.INIT_AGE+4, this.INIT_AGE+10, 'TAFE after yr 12'), 
+            new Choice('Access career counselling', 3, this.INIT_AGE, this.INIT_AGE+10),
+            new Choice('Do the Morrisby test', 3, this.INIT_AGE, this.INIT_AGE),
+            new Choice('Start a business', 3, this.INIT_AGE+3, this.INIT_AGE+10),
+            new Choice('Get a licence, buy a car', 3, this.INIT_AGE+3, this.INIT_AGE+10),
+            new Choice('Complete work placement', 2, this.INIT_AGE, this.INIT_AGE+10),
+            new Choice('Complete Micro-credentials', 1, this.INIT_AGE+3, this.INIT_AGE+10)
         ];
         this.lucks = [
             new Card('You found a lucky $100 bill!', 100),
@@ -68,12 +82,71 @@ class Game {
         $('#total-points').text(this.totalPoints);
     }
 
+    /*
     drawChoice() {
         const card = this.choices[Math.floor(Math.random() * this.choices.length)];
         return card.flip().then(() => {
             this.applyPointsForCard(card);
             this.updateStatus();
         });
+    }
+    */
+    getAvailableChoices() {
+        return this.choices.filter(choice => 
+            !choice.chosen &&
+            this.currentAge >= choice.minAge &&
+            this.currentAge <= choice.maxAge &&
+            (choice.prerequisite === null || this.choices.find(c => c.description === choice.prerequisite && c.chosen))
+        );
+    }
+
+    makeChoice(choiceIndex) {
+        if (this.choiceMadeThisTurn) {
+            alert("You've already made a choice this turn.");
+            return null;
+        }
+        const availableChoices = this.getAvailableChoices();
+        const selectedChoice = availableChoices[choiceIndex];
+        if (selectedChoice) {
+            selectedChoice.chosen = true;
+            this.applyPointsForCard(selectedChoice);
+            this.updateStatus();
+            this.choiceMadeThisTurn = true;
+            return selectedChoice;
+        }
+        return null;
+    }
+
+    updateChoices() {
+        const availableChoices = this.getAvailableChoices();
+        const choicesList = $('#choices-list');
+        choicesList.empty();
+        availableChoices.forEach((choice, index) => {
+            const li = $('<li>').text(choice.description).addClass('choice-item');
+            li.click(() => {
+                const selectedChoice = this.makeChoice(index);
+                if (selectedChoice) {
+                    alert(`You chose: ${selectedChoice.description}\nPoints: ${selectedChoice.points}`);
+                    this.updateChoices();
+                    this.updateTurnStatus();
+                    $('#draw-choice').prop('disabled', true);
+                    this.updateChoices();
+                    $('#draw-luck').prop('disabled', false);
+                }
+            });
+            choicesList.append(li);
+        });
+    }
+
+    updateTurnStatus() {
+        const turnStatus = $('#turn-status');
+        if (this.choiceMadeThisTurn) {
+            turnStatus.text("You've made your choice for this turn.");
+            $('#draw-choice').prop('disabled', true);
+        } else {
+            turnStatus.text("You can make a choice this turn.");
+            $('#draw-choice').prop('disabled', false);
+        }
     }
 
     drawLuck() {
@@ -96,13 +169,14 @@ class Game {
         if (this.currentAge < this.maxAge) {
             this.currentAge++;
             this.yearsLeft--;
+            this.choiceMadeThisTurn = false;
             return true;
         }
         return false;
     }
 
     startNewGame() {
-        this.currentAge = 16;
+        this.currentAge = 15;
         this.maxAge = 25;
         this.yearsLeft = this.maxAge - this.currentAge;
         this.totalPoints = 0;
@@ -120,6 +194,11 @@ class Game {
         
         html += `<p><strong>Total Starting Points:</strong> ${characterPoints}</p>`;
         $('#character-attributes').html(html);
+
+        this.updateTurnStatus();
+        this.choiceMadeThisTurn = false;
+        this.choices.forEach(choice => choice.chosen = false);
+        this.updateChoices();
         
         this.gameInProgress = true;
         this.enableAllButtons(); 

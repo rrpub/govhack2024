@@ -32,9 +32,14 @@
         <section id="game-controls">
             <button id="start-new-game">New Game</button>
             <div id="character-attributes"></div>
-            <button id="draw-choice">Draw Choice</button>
+            <button id="draw-choice">Select A Choice Below</button>
             <button id="draw-luck" disabled>Draw Luck</button>
             <button id="next-year" disabled>Next Year</button>
+        </section>
+        <section id="choices-container">
+            <div id="turn-status"></div>
+            <h3>Available Choices:</h3>
+            <ul id="choices-list"></ul>
         </section>
     </div>
     <script>
@@ -58,12 +63,13 @@
                 game.updateStatus();
             });
 
+            /*
             $('#draw-choice').click(async function() {
                 $(this).prop('disabled', true);
-                game.drawChoice().then(() => {
-                    $('#draw-luck').prop('disabled', false);
-                });
+                game.updateChoices();
+                $('#draw-luck').prop('disabled', false);
             });
+            */
 
             $('#draw-luck').click(async function() {
                 $(this).prop('disabled', true);
@@ -75,6 +81,8 @@
             $('#next-year').click(function() {
                 if (game.nextYear()) {
                     game.updateStatus();
+                    game.updateTurnStatus();
+                    game.updateChoices();
                     $('#draw-choice').prop('disabled', false);
                     $('#draw-luck').prop('disabled', true);
                     $('#next-year').prop('disabled', true);
