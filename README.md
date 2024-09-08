@@ -22,3 +22,6 @@ This game simulates a 10-year journey through education and early career choices
 3. Advance to the next year using the "Next Year" button.
 4. The game ends after 10 years.
 5. Your final Employment Opportunity Score represents your career prospects.
+
+## Demo
+https://drive.google.com/file/d/1yOCOPtMh52F65g-yMhBP4-zROY1UaPbn/view?usp=share_link
