@@ -1,23 +1,44 @@
 body {
+    background-image: url('../img/bg.jpg') !important;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: -1;
 }
 
 header {
-    background-color: #0078D4;
+    background-color: rgba(0, 120, 212, 0.9);
     color: white;
-    padding: 20px;
+    padding: 1px;
     text-align: center;
 }
 
+header h2{
+    color: white;
+}
+
 section {
-    margin: 20px;
-    padding: 20px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.8);
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+    padding: 10px 20px;
 }
 
 h2 {

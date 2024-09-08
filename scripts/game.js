@@ -4,16 +4,16 @@ class Game {
         this.gameInProgress = false;
         this.currentAge = this.INIT_AGE;
         this.maxAge = 24;
-        this.yearsLeft = this.maxAge - this.currentAge;
+        this.yearsLeft = this.maxAge - this.currentAge + 1;
         this.totalPoints = 0;
         this.character = {};
         this.characterPool = {
-            'Family Income': {
+            'Socio-economic': {
               'Wealthy Family': 5,
               'Middle Income Family': 4,
               'Low Income Family': 3
             },
-            'Location': {
+            'Location/access to education options': {
               'Wealthy Suburb': 5,
               'Middle Suburb': 4,
               'Rural': 3, 
@@ -40,16 +40,18 @@ class Game {
             new Choice('Do the Morrisby test', 3, this.INIT_AGE, this.INIT_AGE),
             new Choice('Start a business', 3, this.INIT_AGE+3, this.INIT_AGE+10),
             new Choice('Get a licence, buy a car', 3, this.INIT_AGE+3, this.INIT_AGE+10),
-            new Choice('Complete work placement', 2, this.INIT_AGE, this.INIT_AGE+10),
-            new Choice('Complete Micro-credentials', 1, this.INIT_AGE+3, this.INIT_AGE+10)
+            new Choice('Complete work placement', 2, this.INIT_AGE+1, this.INIT_AGE+10),
+            new Choice('Complete micro-credentials', 1, this.INIT_AGE+3, this.INIT_AGE+10), 
+            new Choice('Travel', 1, this.INIT_AGE+3, this.INIT_AGE+10), 
+            new Choice('Volunteer work', 1, this.INIT_AGE, this.INIT_AGE+10)
         ];
         this.baseLucks = [
             new Card('Natural Disaster', -3),
             new Card('TattsLotto Win!', 4),
-            //new Card('Health Issues', -3),
-            //new Card('Parents Divorce', -3),
-            //new Card('Health Issues', -3),
-            //new Card('I\'m Broke!', -3)
+            new Card('Health Issues', -3),
+            new Card('Parents Divorce', -3),
+            new Card('Health Issues', -3),
+            new Card('I\'m Broke!', -3)
         ];
         this.currentLucks = [...this.baseLucks];
         this.drawnLucks = new Set();
@@ -114,7 +116,7 @@ class Game {
 
     updateStatus() {
         $('#age').text(this.currentAge);
-        $('#years-left').text(this.yearsLeft);
+        $('#years-left').text(this.yearsLeft+"/10");
         $('#total-points').text(this.totalPoints);
     }
 
@@ -135,7 +137,10 @@ class Game {
         const availableChoices = this.getAvailableChoices();
         const selectedChoice = availableChoices[choiceIndex];
         if (selectedChoice) {
-            selectedChoice.chosen = true;
+            if (selectedChoice.description !== 'Complete micro-credentials' && 
+                selectedChoice.description !== 'Access career counselling') {
+                selectedChoice.chosen = true;
+            }
             this.applyPointsForCard(selectedChoice);
             this.updateStatus();
             this.updateLuckPool(selectedChoice);
@@ -154,7 +159,7 @@ class Game {
             li.click(() => {
                 const selectedChoice = this.makeChoice(index);
                 if (selectedChoice) {
-                    alert(`You chose: ${selectedChoice.description}\nPoints: ${selectedChoice.points}`);
+                    alert(`You chose: ${selectedChoice.description}\nScore: ${selectedChoice.points}`);
                     this.updateChoices();
                     this.updateTurnStatus();
                     $('#draw-choice').prop('disabled', true);
@@ -226,22 +231,21 @@ class Game {
 
     startNewGame() {
         this.currentAge = 15;
-        this.maxAge = 25;
-        this.yearsLeft = this.maxAge - this.currentAge;
+        this.yearsLeft = this.maxAge - this.currentAge + 1;
         this.totalPoints = 0;
         this.character = this.selectCharacterAttributes();
-        let html = '';
+        let html = '<div><h3>Background factors<h3></div>';
         let characterPoints = 0;
         
         for (const [attribute, {value, points}] of Object.entries(this.character)) {
-            html += `<p><strong>${attribute}:</strong> ${value} (${points} points)</p>`;
+            html += `<p><strong>${attribute}:</strong> ${value} (${points} score)</p>`;
             characterPoints += points;
         }
         
         $('#character-attributes').html(html);
         this.addPoints(characterPoints);
         
-        html += `<p><strong>Total Starting Points:</strong> ${characterPoints}</p>`;
+        html += `<p><strong>Total Starting Score:</strong> ${characterPoints}</p>`;
         $('#character-attributes').html(html);
 
         this.updateTurnStatus();
@@ -258,7 +262,7 @@ class Game {
     }
 
     endGame() {
-        alert(`Game Over! Your final score is: ${this.totalPoints} points.`);
+        alert(`Congratulations! The 10-year period is ended. Your final score is ${this.totalPoints}. You can restart and play the game again.`);
         this.gameInProgress = false;
         this.totalPoints = 0;
         $('#character-attributes').empty();

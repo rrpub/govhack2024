@@ -12,22 +12,16 @@
 <body>
     <div id="game">
         <header>
-            <h1>Welcome to the Employment Pathway Game!</h1>
+            <h2>Future Forge</h2>
         </header>
         <section id="introduction">
             <h2>Game Introduction</h2>
-            <p>Navigate through choices to simulate your pathway to employment.</p>
+            <p>Make 1 Choice and draw 1 Luck card each year.</p>
         </section>
         <section id="game-progression" style="display: none;">
             <h2>Game Progression</h2>
             <div id="current-situation"></div>
             <div id="choices"></div>
-        </section>
-        <section id="status-display">
-            <h2>Status</h2>
-            <p>Age: <span id="age"></span></p>
-            <p>Years Left: <span id="years-left"></span></p>
-            <p>Points: <span id="total-points"></span></p>
         </section>
         <section id="game-controls">
             <button id="start-new-game">New Game</button>
@@ -35,6 +29,12 @@
             <button id="draw-choice">Select A Choice Below</button>
             <button id="draw-luck" disabled>Draw Luck</button>
             <button id="next-year" disabled>Next Year</button>
+        </section>
+        <section id="status-display">
+            <h2>Status</h2>
+            <p style="display:none">Age: <span id="age"></span></p>
+            <p>Years Left: <span id="years-left"></span></p>
+            <p>Employment Opportunity Score: <span id="total-points"></span></p>
         </section>
         <section id="choices-container">
             <div id="turn-status"></div>
@@ -53,7 +53,7 @@
 
             $('#start-new-game').click(function() {
                 if (game.isGameInProgress()) {
-                    if (confirm("Are you sure you want to end the current game and start a new one?")) {
+                    if (confirm("Are you sure you want to start a new one?")) {
                         game.endGame();
                         game.startNewGame();
                     }
@@ -85,7 +85,7 @@
                     $('#draw-luck').prop('disabled', true);
                     $('#next-year').prop('disabled', true);
                 } else {
-                    alert("Game Over! You've reached 25 years old.");
+                    alert(`Congratulations! The 10-year period is ended. Your final score is ${game.totalPoints}. You can restart and play the game again.`);
                 }
             });
 

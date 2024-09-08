@@ -27,7 +27,7 @@ class Card {
                 <div class="card-front"></div>
                 <div class="card-back">
                     <h3>${this.description}</h3>
-                    <p>Points: ${this.points}</p>
+                    <p>Score: ${this.points}</p>
                 </div>
             </div>
         `;
