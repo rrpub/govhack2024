@@ -63,19 +63,17 @@
                 game.updateStatus();
             });
 
-            /*
-            $('#draw-choice').click(async function() {
-                $(this).prop('disabled', true);
-                game.updateChoices();
-                $('#draw-luck').prop('disabled', false);
-            });
-            */
-
             $('#draw-luck').click(async function() {
                 $(this).prop('disabled', true);
-                game.drawLuck().then(() => {
+                game.checkLuckPool(); 
+                if(!game.skipLuck){
+                    game.drawLuck().then(() => {
+                        $('#next-year').prop('disabled', false);
+                    });
+                }
+                else{
                     $('#next-year').prop('disabled', false);
-                });
+                }
             });
 
             $('#next-year').click(function() {

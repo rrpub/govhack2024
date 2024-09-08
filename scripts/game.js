@@ -3,7 +3,7 @@ class Game {
         this.INIT_AGE = 15;
         this.gameInProgress = false;
         this.currentAge = this.INIT_AGE;
-        this.maxAge = 25;
+        this.maxAge = 24;
         this.yearsLeft = this.maxAge - this.currentAge;
         this.totalPoints = 0;
         this.character = {};
@@ -43,11 +43,47 @@ class Game {
             new Choice('Complete work placement', 2, this.INIT_AGE, this.INIT_AGE+10),
             new Choice('Complete Micro-credentials', 1, this.INIT_AGE+3, this.INIT_AGE+10)
         ];
-        this.lucks = [
-            new Card('You found a lucky $100 bill!', 100),
-            new Card('You lost your wallet', -50),
-            new Card('Won a small scholarship', 30),
+        this.baseLucks = [
+            new Card('Natural Disaster', -3),
+            new Card('TattsLotto Win!', 4),
+            //new Card('Health Issues', -3),
+            //new Card('Parents Divorce', -3),
+            //new Card('Health Issues', -3),
+            //new Card('I\'m Broke!', -3)
         ];
+        this.currentLucks = [...this.baseLucks];
+        this.drawnLucks = new Set();
+        this.Lucks_yr12SchoolLeave = [
+            new Card('Erratic and Unstable Work Hours', -3),
+            new Card('Workplace Accident', -5),
+            new Card('Low Wages', -2),
+            new Card('Physically Demanding Work', -3),
+            new Card('Unexpected Promotion', 2), 
+            new Card('Retrenched', -4), 
+            new Card('Generous Tips', 2), 
+            new Card('Inconsistent Pay', -1)
+        ];
+        this.Lucks_tertiaryStudents = [
+            new Card('Win a Scholarship', 4),
+            new Card('Unfulfilled Expectations', -1),
+            new Card('Isolation/Loneliness', -1),
+            new Card('Job Offer before Graduation', 4),
+            new Card('Supportive Educator! (Extra help + Mentorship)', 1),
+            new Card('New Friendships', 2),
+            new Card('Great Campus Resources', 2),
+        ];
+        this.choicesForLuck_yr12SchoolLeave = ['Leave education after yr 12'];
+        this.choicesForLuck_tertiaryStudents = ['TAFE after yr 12', 'University after yr 12'];
+        this.skipLuck = false;
+    }
+
+    updateLuckPool(choice){
+        if (this.choicesForLuck_yr12SchoolLeave.includes(choice.description)) {
+            this.currentLucks.push(...this.Lucks_yr12SchoolLeave);
+        } else if (this.choicesForLuck_tertiaryStudents.includes(choice.description)) {
+            this.currentLucks = this.currentLucks.filter(luck => !this.Lucks_yr12SchoolLeave.includes(luck));
+            this.currentLucks.push(...this.Lucks_tertiaryStudents);
+        }
     }
 
     disableAllButtons() {
@@ -82,15 +118,6 @@ class Game {
         $('#total-points').text(this.totalPoints);
     }
 
-    /*
-    drawChoice() {
-        const card = this.choices[Math.floor(Math.random() * this.choices.length)];
-        return card.flip().then(() => {
-            this.applyPointsForCard(card);
-            this.updateStatus();
-        });
-    }
-    */
     getAvailableChoices() {
         return this.choices.filter(choice => 
             !choice.chosen &&
@@ -111,6 +138,7 @@ class Game {
             selectedChoice.chosen = true;
             this.applyPointsForCard(selectedChoice);
             this.updateStatus();
+            this.updateLuckPool(selectedChoice);
             this.choiceMadeThisTurn = true;
             return selectedChoice;
         }
@@ -131,7 +159,12 @@ class Game {
                     this.updateTurnStatus();
                     $('#draw-choice').prop('disabled', true);
                     this.updateChoices();
-                    $('#draw-luck').prop('disabled', false);
+                    if(!this.skipLuck){
+                        $('#draw-luck').prop('disabled', false);
+                    }
+                    else{
+                        $('#next-year').prop('disabled', false);
+                    }
                 }
             });
             choicesList.append(li);
@@ -150,11 +183,27 @@ class Game {
     }
 
     drawLuck() {
-        const card = this.lucks[Math.floor(Math.random() * this.lucks.length)];
-        return card.flip().then(() => {
-            this.applyPointsForCard(card);
+        const availableLucks = this.currentLucks.filter(luck => !this.drawnLucks.has(luck));
+        if (availableLucks.length === 0) {
+            return Promise.resolve(null);  // No more luck cards available
+        }
+        const luckIndex = Math.floor(Math.random() * availableLucks.length);
+        const drawnLuck = availableLucks[luckIndex];
+        this.drawnLucks.add(drawnLuck);
+        return drawnLuck.flip().then(() => {
+            this.applyPointsForCard(drawnLuck);
             this.updateStatus();
         });
+    }
+
+    checkLuckPool(){
+        if (!this.skipLuck){
+            const availableLucks = this.currentLucks.filter(luck => !this.drawnLucks.has(luck));
+            if(availableLucks.length === 0) {
+                this.skipLuck = true;
+                alert("No more luck cards available!");
+            }
+        }
     }
 
     applyPointsForCard(card) {
@@ -199,6 +248,9 @@ class Game {
         this.choiceMadeThisTurn = false;
         this.choices.forEach(choice => choice.chosen = false);
         this.updateChoices();
+        
+        this.currentLucks = [...this.baseLucks];
+        this.drawnLucks.clear();
         
         this.gameInProgress = true;
         this.enableAllButtons(); 
