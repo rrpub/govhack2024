@@ -159,7 +159,7 @@ class Game {
             li.click(() => {
                 const selectedChoice = this.makeChoice(index);
                 if (selectedChoice) {
-                    alert(`You chose: ${selectedChoice.description}\nScore: ${selectedChoice.points}`);
+                    alert(`You chose: ${selectedChoice.description}\nPoints: ${selectedChoice.points}`);
                     this.updateChoices();
                     this.updateTurnStatus();
                     $('#draw-choice').prop('disabled', true);
@@ -238,7 +238,7 @@ class Game {
         let characterPoints = 0;
         
         for (const [attribute, {value, points}] of Object.entries(this.character)) {
-            html += `<p><strong>${attribute}:</strong> ${value} (${points} score)</p>`;
+            html += `<p><strong>${attribute}:</strong> ${value} (${points} points)</p>`;
             characterPoints += points;
         }
         
